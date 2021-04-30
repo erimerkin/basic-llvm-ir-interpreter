@@ -1,54 +1,39 @@
-void parseParanExpr(){
-    string token = getToken();
+#include "SyntaxTree.cpp"
 
-    if (token.value == '('){
-        parseExpr();
-        token = getToken();
-        if (token.value != ')'){
-            syntaxError(line);
-        }
+ExpressionNode *parseParanExpr()
+{
+    getNextToken();
 
-        return x;
-    }
-
-    if (token.type == identifier){
-
-    }
-
-    if (token.type == number){
-
-    } else {
-        syntaxError(line);
-    }
-
+    if (CurTok != ')')
+        return syntaxError(line);
+    getNextToken(); // eat ).
+    return V;
 }
 
-void parseFactor(){
-
+ExpressionNode *parseFactor()
+{
 }
 
-void parseMorefactor(){
-
+ExpressionNode *parseMorefactor()
+{
 }
 
-void parseTerm(){
-
-
+ExpressionNode *parseTerm()
+{
 }
 
-void parseChoose(){
-
+ExpressionNode *parseChoose()
+{
 }
 
-void parsePrint(){
-    
+ExpressionNode *parsePrint()
+{
 }
 
-void parseMoreterms(){
-
+ExpressionNode *parseMoreterms()
+{
 }
 
-void parseExpr(){
-    
+ExpressionNode *parseExpr()
+{
 }
-

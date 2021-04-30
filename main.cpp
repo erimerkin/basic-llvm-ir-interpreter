@@ -3,59 +3,111 @@
 #include <fstream>
 #include <string>
 
+#include "SyntaxTree.cpp"
+
 using namespace std;
 
-void getToken()
+// void getToken()
+// {
+//     //Removes spaces
+//     while (isspace(lastChar))
+//     {
+//         lastChar = getNextChar();
+//     }
+
+//     //Checks if the first letter
+//     if (isalpha(lastChar))
+//     {
+//         string identifier = lastChar;
+
+//         lastChar = getNextChar();
+//         while (isalnum(lastChar))
+//         {
+//             identifier += lastChar;
+//             lastChar = getNextChar();
+//         }
+//     }
+
+//     //checks if the next
+//     if (isdigit(lastChar))
+//     {
+//         string number = lastChar;
+//         lastChar = getNextChar();
+
+//         while (isdigit(lastChar))
+//         {
+//         }
+//     }
+
+//     if (lastChar == #)
+//     {
+//         continue;
+//     }
+// }
+
+
+/**
+ * Creates the code for syntax error in given line
+ * */
+void syntaxError(int line, ofstream output)
 {
-    //Removes spaces
-    while (isspace(lastChar))
-    {
-        lastChar = getNextChar();
-    }
-
-    //Checks if the first letter
-    if (isalpha(lastChar))
-    {
-        string identifier = lastChar;
-
-        lastChar = getNextChar();
-        while (isalnum(lastChar))
-        {
-            identifier += lastChar;
-            lastChar = getNextChar();
-        }
-
-    }
-
-    //checks if the next
-    if (isdigit(lastChar))
-    {
-        string number = lastChar;
-        lastChar = getNextChar();
-
-        while (isdigit(lastChar))
-        {
-        }
-    }
-
-    if (lastChar == #)
-    {
-        continue;
-    }
+    output << "; ModuleID = \'mylang2ir\'\n"
+           << "declare i32 @printf(i8*, ...)\n"
+           << "@print.str = constant [23 x i8] c\"Line %d: syntax error\\0A\\00\"\n\n"
+           << "define i32 @main() {\n"
+           << "\tcall i32 (i8*, ...)* @printf(i8* getelementptr ([23 x i8]* @print.str, i32 0, i32 0), i32 " << line << ")\n"
+           << "\tret i32 0\n"
+           << "}";
 }
 
-void syntaxError(int line)
+/**
+ * Generates IR code by adding headers to file, allocating space for all variables 
+ * and running generateCode() function from AST nodes which creates IR code for its type.
+ * Takes parameters ofstream output to print to file, vector<ExpressionNode> program is the AST
+ * and varmap stores all the declared variables which is used to allocate them.
+ * */
+void generateIR(ofstream &output, vector<ExpressionNode *> &program, map<string, int> &varmap)
 {
-}
 
-char getNextChar()
-{
+    //Adding header to .ll file
+    output << "; ModuleID = \'mylang2ir\'\n"
+           << "declare i32 @printf(i8*, ...)\n"
+           << "@print.str = constant [4 x i8] c\"%d\\0A\\00\"\n\n"
+           << "define i32 @main() {\n";
+
+
+    //Allocates declared variables
+    for (auto test : varmap)
+    {
+        output << "\t%" << test.first << " = alloca i32\n";
+    }
+
+    output << "\n";
+
+    //Gives all allocated vars value of 0
+    for (auto identifier : varmap)
+    {
+        output << "store i32 0, i32* %" << identifier.first << "\n";
+    }
+
+    output << "\n";
+
+
+    //Creates the code from given program
+    for (auto expression : program)
+    {
+        expression->generateCode(output);
+    }
+
+    //Finishes the code creation
+    output << "\tret i32 0\n"
+           << "}";
 }
 
 int main(int argc, char *argv[])
 {
 
-    Map<string, int> varmap;
+    map<string, int> varmap;
 
     string inputFile = argv[1];
     string outputFile = inputFile.substr(0, inputFile.size() - 3);
@@ -64,9 +116,9 @@ int main(int argc, char *argv[])
 
     int lineIndex;
     string line;
-    while(getline(inFile, line){
+    while (getline(inFile, line))
+    {
         lineIndex++;
         static int lastChar = ' ';
-
     }
 }
