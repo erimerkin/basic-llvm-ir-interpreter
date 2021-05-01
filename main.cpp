@@ -3,47 +3,9 @@
 #include <fstream>
 #include <string>
 
-#include "SyntaxTree.cpp"
+#include "Parser.h"
 
 using namespace std;
-
-// void getToken()
-// {
-//     //Removes spaces
-//     while (isspace(lastChar))
-//     {
-//         lastChar = getNextChar();
-//     }
-
-//     //Checks if the first letter
-//     if (isalpha(lastChar))
-//     {
-//         string identifier = lastChar;
-
-//         lastChar = getNextChar();
-//         while (isalnum(lastChar))
-//         {
-//             identifier += lastChar;
-//             lastChar = getNextChar();
-//         }
-//     }
-
-//     //checks if the next
-//     if (isdigit(lastChar))
-//     {
-//         string number = lastChar;
-//         lastChar = getNextChar();
-
-//         while (isdigit(lastChar))
-//         {
-//         }
-//     }
-
-//     if (lastChar == #)
-//     {
-//         continue;
-//     }
-// }
 
 
 /**
@@ -63,10 +25,10 @@ void syntaxError(int line, ofstream output)
 /**
  * Generates IR code by adding headers to file, allocating space for all variables 
  * and running generateCode() function from AST nodes which creates IR code for its type.
- * Takes parameters ofstream output to print to file, vector<ExpressionNode> program is the AST
+ * Takes parameters ofstream output to print to file, vector<ASTNode> program is the AST
  * and varmap stores all the declared variables which is used to allocate them.
  * */
-void generateIR(ofstream &output, vector<ExpressionNode *> &program, map<string, int> &varmap)
+void generateIR(ofstream &output, vector<ASTNode *> &program, map<string, int> &varmap)
 {
 
     //Adding header to .ll file
@@ -108,17 +70,22 @@ int main(int argc, char *argv[])
 {
 
     map<string, int> varmap;
+    vector<string> test;
 
     string inputFile = argv[1];
     string outputFile = inputFile.substr(0, inputFile.size() - 3);
 
     ifstream inFile(inputFile);
 
-    int lineIndex;
-    string line;
-    while (getline(inFile, line))
-    {
-        lineIndex++;
-        static int lastChar = ' ';
-    }
+    // int lineIndex;
+    // string line;
+    // while (getline(inFile, line))
+    // {
+    //     lineIndex++;
+    //     static int lastChar = ' ';
+    // }
+
+    
+
+    return 0;
 }

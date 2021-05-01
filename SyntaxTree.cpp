@@ -4,20 +4,20 @@
 
 using namespace std;
 
-class ExpressionNode
+class ASTNode
 {
 public:
     static int tempIndex;
     string generateCode(ofstream &output);
 };
 
-class ChooseNode : public ExpressionNode
+class ChooseNode : public ASTNode
 {
 public:
-    ExpressionNode *expr1, *expr2, *expr3, *expr4;
+    ASTNode *expr1, *expr2, *expr3, *expr4;
     static int chooseIndex;
 
-    ChooseNode(ExpressionNode *_expr1, ExpressionNode *_expr2, ExpressionNode *_expr3, ExpressionNode *_expr4)
+    ChooseNode(ASTNode *_expr1, ASTNode *_expr2, ASTNode *_expr3, ASTNode *_expr4)
     {
         this->expr1 = _expr1;
         this->expr2 = _expr2;
@@ -37,7 +37,7 @@ public:
         output << "\tbr label %" << labelName << "if\n\n";
 
         output << labelName + "if:\n";
-        
+
         output << "br i1 ";
 
         labelName + "else";
@@ -46,12 +46,12 @@ public:
     }
 };
 
-class PrintNode : public ExpressionNode
+class PrintNode : public ASTNode
 {
 public:
-    ExpressionNode *expr;
+    ASTNode *expr;
 
-    PrintNode(ExpressionNode *_expr)
+    PrintNode(ASTNode *_expr)
     {
         this->expr = _expr;
     }
@@ -63,15 +63,15 @@ public:
     }
 };
 
-class ConditionalNode : public ExpressionNode
+class ConditionalNode : public ASTNode
 {
 public:
     static int conditionalIndex;
     int type;
-    ExpressionNode *condition;
-    vector<ExpressionNode *> statements;
+    ASTNode *condition;
+    vector<ASTNode *> statements;
 
-    ConditionalNode(int _type, ExpressionNode *_condition)
+    ConditionalNode(int _type, ASTNode *_condition)
     {
         this->type = _type;
         this->condition = _condition;
@@ -110,14 +110,14 @@ public:
     }
 };
 
-class BinaryOperationNode : public ExpressionNode
+class BinaryOperationNode : public ASTNode
 {
 public:
-    ExpressionNode *left;
-    ExpressionNode *right;
+    ASTNode *left;
+    ASTNode *right;
     char operation;
 
-    BinaryOperationNode(ExpressionNode *_left, ExpressionNode *_right, char _operation)
+    BinaryOperationNode(ASTNode *_left, ASTNode *_right, char _operation)
     {
         this->left = _left;
         this->right = _right;
@@ -150,11 +150,11 @@ public:
     }
 };
 
-class AssignNode : public ExpressionNode
+class AssignNode : public ASTNode
 {
 public:
     IdentifierNode *identifier;
-    ExpressionNode *expr;
+    ASTNode *expr;
 
     string generateCode(ofstream &output)
     {
@@ -164,23 +164,23 @@ public:
     }
 };
 
-class NumberNode : public ExpressionNode
+class NumberNode : public ASTNode
 {
 public:
-    int value;
+    string value;
 
-    NumberNode(int _value)
+    NumberNode(string _value)
     {
         this->value = _value;
     }
 
     string generateCode(ofstream &output)
     {
-        return "" + this->value;
+        return this->value;
     }
 };
 
-class IdentifierNode : public ExpressionNode
+class IdentifierNode : public ASTNode
 {
 public:
     string name;
