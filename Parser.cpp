@@ -4,9 +4,9 @@ ASTNode *Parser::parseParanExpr()
 {
     ASTNode *node = parseExpr();
 
-    Token currentToken = tokenizer->getNextToken();
+    currentToken = tokenizer->getNextToken();
 
-    if (currentToken.value != ")")
+    if (currentToken->value != ")")
     {
         syntaxError(line);
         return nullptr;
@@ -19,19 +19,19 @@ ASTNode *Parser::parseChoose()
 {
     ChooseNode *node;
 
-    if (currentToken.value == "(")
+    if (currentToken->value == "(")
     {
         node->expr1 = parseExpr();
-        if (currentToken.value == ",")
+        if (currentToken->value == ",")
         {
             node->expr2 = parseExpr();
-            if (currentToken.value == ",")
+            if (currentToken->value == ",")
             {
                 node->expr3 = parseExpr();
-                if (currentToken.value == ",")
+                if (currentToken->value == ",")
                 {
                     node->expr4 = parseExpr();
-                    if (currentToken.value == ")")
+                    if (currentToken->value == ")")
                     {
                         return node;
                     }
@@ -45,26 +45,26 @@ ASTNode *Parser::parseChoose()
 
 ASTNode *Parser::parseFactor()
 {
-    if (currentToken.value == "(")
+    if (currentToken->value == "(")
     {
         return parseParanExpr();
     }
 
     ASTNode *node = nullptr;
 
-    switch (currentToken.type)
+    switch (currentToken->type)
     {
     case (token_choose):
         node = parseChoose();
         currentToken = tokenizer->getNextToken();
         return node;
     case (token_number):
-        node = new NumberNode(currentToken.value);
+        node = new NumberNode(currentToken->value);
         currentToken = tokenizer->getNextToken();
         return node;
     case (token_identifier):
-        variables.push_back(currentToken.value);
-        node = new IdentifierNode(currentToken.value);
+        variables.insert(currentToken->value);
+        node = new IdentifierNode(currentToken->value);
         currentToken = tokenizer->getNextToken();
         return node;
     default:
@@ -78,9 +78,9 @@ ASTNode *Parser::parseTerm()
 {
     ASTNode *node = parseFactor();
 
-    while (currentToken.value == "*" || currentToken.value == "/")
+    while (currentToken->value == "*" || currentToken->value == "/")
     {
-        string opSign = currentToken.value;
+        string opSign = currentToken->value;
         currentToken = tokenizer->getNextToken();
         ASTNode *expr = parseFactor();
 
@@ -95,9 +95,9 @@ ASTNode *Parser::parseExpr()
 
     ASTNode *node = parseTerm();
 
-    while (currentToken.value == "+" || currentToken.value == "-")
+    while (currentToken->value == "+" || currentToken->value == "-")
     {
-        string opSign = currentToken.value;
+        string opSign = currentToken->value;
         currentToken = tokenizer->getNextToken();
         ASTNode *expr = parseTerm();
 
@@ -112,7 +112,7 @@ ASTNode *Parser::parsePrint()
     PrintNode *node = nullptr;
     currentToken = tokenizer->getNextToken();
 
-    if (currentToken.value == "(")
+    if (currentToken->value == "(")
     {
         node = new PrintNode(parseParanExpr());
     }
@@ -125,16 +125,16 @@ ASTNode *Parser::parsePrint()
 ASTNode *Parser::parseStatement()
 {
 
-    if (currentToken.type == token_print)
+    if (currentToken->type == token_print)
     {
         return parsePrint();
     }
-    else if (currentToken.type == token_identifier)
+    else if (currentToken->type == token_identifier)
     {
         ASTNode *id = parseFactor();
         currentToken = tokenizer->getNextToken();
 
-        if (currentToken.value == "=")
+        if (currentToken->value == "=")
         {
         }
     }
@@ -149,18 +149,18 @@ ASTNode *Parser::parse()
 {
     currentToken = tokenizer->getNextToken();
 
-    switch (currentToken.type)
+    switch (currentToken->type)
     {
     case (token_eol):
         currentToken = tokenizer->getNextToken();
     case (token_conditional):
         int type;
 
-        if (currentToken.value == "if")
+        if (currentToken->value == "if")
         {
             type = 0;
         }
-        else if (currentToken.value == "while")
+        else if (currentToken->value == "while")
         {
             type = 1;
         }
@@ -173,21 +173,21 @@ ASTNode *Parser::parse()
         ConditionalNode *node = nullptr;
 
         currentToken = tokenizer->getNextToken();
-        if (currentToken.value == "(")
+        if (currentToken->value == "(")
         {
             node = new ConditionalNode(type, parseParanExpr());
 
             currentToken = tokenizer->getNextToken();
 
-            if (currentToken.value == "{")
+            if (currentToken->value == "{")
             {
                 //Parse expressions till there is a '}' symbol found
-                while (currentToken.value != "}")
+                while (currentToken->value != "}")
                 {
                     node->statements.push_back(parseExpr());
 
                     //There is no '}' file ended. syntax error
-                    if (currentToken.type == token_eof)
+                    if (currentToken->type == token_eof)
                     {
                         syntaxError(line);
                         return nullptr;
@@ -204,4 +204,9 @@ ASTNode *Parser::parse()
         ASTNode *node = parseStatement();
         return node;
     }
+}
+
+void Parser::syntaxError(int line){
+    this->error = true;
+    this->line = line;
 }

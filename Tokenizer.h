@@ -1,3 +1,6 @@
+#ifndef TOKENIZER_H
+#define TOKENIZER_H
+
 #include <string>
 #include <vector>
 #include <fstream>
@@ -27,12 +30,14 @@ class Tokenizer
 {
 public:
     static int lineNumber, lastLine;
-    vector<Token> tokens;
-    ifstream inputFile;
+    // vector<Token> tokens;
+    ifstream *inputFile;
 
-    Tokenizer(ifstream &inputFile);
+    Tokenizer(ifstream *inputFile);
     ~Tokenizer();
 
-    void tokenizeInput(ifstream &input);
-    Token getNextToken();
+    // void tokenizeInput(ifstream &input);
+    Token* getNextToken();
 };
+
+#endif

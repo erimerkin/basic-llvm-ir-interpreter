@@ -1,17 +1,21 @@
-#include "SyntaxTree.cpp"
+#ifndef PARSER_H
+#define PARSER_H
 
+#include <unordered_set>
+
+#include "SyntaxTree.cpp"
 #include "Tokenizer.h"
 
 using namespace std;
 class Parser
 {
 public:
-
-    Tokenizer* tokenizer;
+    Tokenizer *tokenizer;
     static int index;
     int line;
-    vector<string> variables;
-    Token currentToken, lastToken;
+    bool error;
+    unordered_set<string> variables;
+    Token *currentToken, lastToken;
 
     Parser(Tokenizer &_tokenizer);
 
@@ -28,3 +32,5 @@ public:
 
     void syntaxError(int line);
 };
+
+#endif
