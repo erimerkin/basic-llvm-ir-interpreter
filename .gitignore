@@ -41,3 +41,4 @@ inputs/
 outputs/
 
 .DS_Store
+.vscode/settings.json

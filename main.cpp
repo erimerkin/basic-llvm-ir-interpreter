@@ -1,5 +1,3 @@
-#include <iostream>
-#include <map>
 #include <fstream>
 #include <string>
 
@@ -30,8 +28,6 @@ void syntaxError(int line, ofstream &output)
 void generateIR(ofstream &output, vector<ASTNode *> &program, unordered_set<string> &varmap)
 {
 
-    cout << "creating file\n";
-
     //Adding header to .ll file
     output << "; ModuleID = \'mylang2ir\'\n"
            << "declare i32 @printf(i8*, ...)\n"
@@ -54,8 +50,6 @@ void generateIR(ofstream &output, vector<ASTNode *> &program, unordered_set<stri
 
     output << "\n";
 
-    cout << program.size() << "\n";
-
     //Creates the code from given program
     for (auto expression : program)
     {
@@ -70,9 +64,9 @@ void generateIR(ofstream &output, vector<ASTNode *> &program, unordered_set<stri
 int main(int argc, char *argv[])
 {
 
-    vector<ASTNode *> program;
+    vector<ASTNode *> program; //vector to hold Nodes for code generation
 
-    string inputFile = argv[1];
+    string inputFile = argv[1]; 
     string outputFile = inputFile.substr(0, inputFile.size() - 3) + ".ll";
 
     ifstream inFile(inputFile);
@@ -80,13 +74,14 @@ int main(int argc, char *argv[])
     Tokenizer *tokenizer = new Tokenizer(&inFile);
     Parser *parser = new Parser(tokenizer);
 
+    //Parse till there is an error or it is end of file
     while (!parser->error && parser->currentToken.type != token_eof)
     {
 
-        ASTNode *node = parser->parse();
-        if (node != nullptr)
-            program.push_back(node);
+        ASTNode *node = parser->parse(); //parses file
 
+        if (node != NULL)
+            program.push_back(node);
         else
             break;
     }
@@ -95,12 +90,14 @@ int main(int argc, char *argv[])
 
     ofstream outFile(outputFile);
 
+    //if there is an error generate error code
     if (parser->error)
     {
-        syntaxError(parser->line, outFile);
+        syntaxError(parser->errLine, outFile);
         return 0;
     }
 
+    //generate code
     generateIR(outFile, program, parser->variables);
 
     outFile.close();

@@ -11,7 +11,7 @@ class Parser
 {
 public:
     Tokenizer *tokenizer;
-    int line;
+    int line, errLine;
     bool error;
     unordered_set<string> variables;
     Token currentToken, lastToken;

@@ -4,17 +4,22 @@
 #include <string>
 #include <vector>
 #include <fstream>
-#include <iostream>
 
 using namespace std;
 
+/**
+ * Abstract class for Asynchronous Syntax Tree
+ * */
 class ASTNode
 {
 public:
     static int tempIndex;
     virtual string generateCode(ofstream &output) = 0;
-};
+ };
 
+/**
+ * Stores identifier of variables. Can generate code with temp variables
+ * */
 class IdentifierNode : public ASTNode
 {
 public:
@@ -24,6 +29,10 @@ public:
     string getID();
 };
 
+
+/**
+ * Stores values for numbers. generateCode() function returns the integer value
+ * */
 class NumberNode : public ASTNode
 {
 public:
@@ -32,6 +41,10 @@ public:
     string generateCode(ofstream &output);
 };
 
+/**
+ * Node for choose expression, stores the expressions inside parantheses. 
+ * Generates code for both expressions and choose function.
+ * */
 class ChooseNode : public ASTNode
 {
 public:
@@ -41,6 +54,10 @@ public:
     string generateCode(ofstream &output);
 };
 
+/**
+ * Node for binary operations. Stores the operation type, right and left handside as expressions
+ * and generates code for the calculation
+ * */
 class BinaryOperationNode : public ASTNode
 {
 public:
@@ -52,6 +69,9 @@ public:
     string generateCode(ofstream &output);
 };
 
+/**
+ * Node for print statements. Generates code for print statement and expression inside the statement
+ * */
 class PrintNode : public ASTNode
 {
 public:
@@ -60,6 +80,10 @@ public:
     string generateCode(ofstream &output);
 };
 
+/**
+ * Node to store conditional statements. Stores the condition, conditional type and statements
+ * inside the code block and generates code for all of them
+ * */
 class ConditionalNode : public ASTNode
 {
 public:
@@ -72,6 +96,10 @@ public:
     string generateCode(ofstream &output);
 };
 
+/**
+ * Node for assignment statement. Stores identifier and expression 
+ * Generates code for assignment statement
+ * */
 class AssignNode : public ASTNode
 {
 public:

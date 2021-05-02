@@ -16,7 +16,6 @@ string IdentifierNode::generateCode(ofstream &output)
 {
     string id = "%temp_var" + to_string(tempIndex);
     tempIndex++;
-
     output << "\t" << id << " = load i32* %" << name << "\n";
 
     return id;
@@ -30,7 +29,9 @@ string IdentifierNode::getID()
     return this->name;
 }
 
-/****************
+///////////////////////////////////////////////////////////////////////////////
+
+/*******************************
  * NumberNode
  * **************/
 
@@ -47,6 +48,9 @@ string NumberNode::generateCode(ofstream &output)
     return this->value;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////
+
+
 /****************
  * ChooseNode
  * **************/
@@ -59,6 +63,10 @@ ChooseNode::ChooseNode(ASTNode *_expr1, ASTNode *_expr2, ASTNode *_expr3, ASTNod
     this->expr4 = _expr4;
 }
 
+/**
+ * Generates code for choose function with expressions inside it.
+ * It uses a branching approach to calculate the result of choose function
+ * */
 string ChooseNode::generateCode(ofstream &output)
 {
     string labelName = "choose_" + to_string(chooseIndex);
@@ -75,9 +83,6 @@ string ChooseNode::generateCode(ofstream &output)
     string end = labelName + "end";
 
     string id1 = this->expr1->generateCode(output);
-    // string id2 = this->expr2->generateCode(output);
-    // string id3 = this->expr3->generateCode(output);
-    // string id4 = this->expr4->generateCode(output);
 
     output << "\tbr label %" << labelif << "\n\n";
 
@@ -92,8 +97,6 @@ string ChooseNode::generateCode(ofstream &output)
     output << labelif << "body:\n";
     string tempVar2 = "%temp_var" + to_string(tempIndex);
     tempIndex++;
-
-    // output << "\t" << tempVar2 << " = load i32* " << expr2->generateCode(output) << "\n"
     string id2 = this->expr2->generateCode(output);
     output << "\tstore i32 " << id2 << ", i32* " << ret_var << "\n"
            << "\tbr label %" << end << "\n\n";
@@ -109,7 +112,6 @@ string ChooseNode::generateCode(ofstream &output)
     output << elif << "body:\n";
     string tempVar4 = "%temp_var" + to_string(tempIndex);
     tempIndex++;
-    // output << "\t" << tempVar4 << " = load i32* " << this->expr3->generateCode(output) << "\n"
     string id3 = this->expr3->generateCode(output);
     output << "\tstore i32 " << id3 << ", i32* " << ret_var << "\n"
            << "\tbr label %" << end << "\n\n";
@@ -118,9 +120,7 @@ string ChooseNode::generateCode(ofstream &output)
     output << el << ":\n";
     string tempVar5 = "%temp_var" + to_string(tempIndex);
     tempIndex++;
-
     string id4 = this->expr4->generateCode(output);
-    // output << "\t" << tempVar5 << " = load i32* " << this->expr4->generateCode(output) << "\n"
     output << "\tstore i32 " << id4 << ", i32* " << ret_var << "\n"
            << "\tbr label %" << end << "\n\n";
 
@@ -133,6 +133,9 @@ string ChooseNode::generateCode(ofstream &output)
     return tempVar6;
 }
 
+
+//////////////////////////////////////////////////////////////////////////////////////
+
 /****************
  * BinaryOperationNode
  * **************/
@@ -143,6 +146,7 @@ BinaryOperationNode::BinaryOperationNode(ASTNode *_left, ASTNode *_right, char _
     this->right = _right;
     this->operation = _operation;
 }
+
 
 /**
  * Generates code for binary operations by calling left and right handside code generation first
@@ -178,6 +182,8 @@ string BinaryOperationNode::generateCode(ofstream &output)
     return tempId;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////
+
 /****************
  * PrintNode
  * **************/
@@ -197,6 +203,8 @@ string PrintNode::generateCode(ofstream &output)
     return "";
 }
 
+//////////////////////////////////////////////////////////////////////////////////////
+
 /****************
  * ConditionalNode
  * **************/
@@ -206,6 +214,7 @@ ConditionalNode::ConditionalNode(int _type, ASTNode *_condition)
     this->type = _type;
     this->condition = _condition;
 }
+
 
 /**
  * Generates code for conditional statements, first generates the condition code
@@ -218,7 +227,6 @@ string ConditionalNode::generateCode(ofstream &output)
     conditionalIndex++;
 
     output << "\tbr label %" << conditionName << "entry\n\n";
-
     output << conditionName << "entry:\n";
 
     string id = condition->generateCode(output); //Generates condition code
@@ -251,6 +259,9 @@ string ConditionalNode::generateCode(ofstream &output)
 
     return "";
 }
+
+//////////////////////////////////////////////////////////////////////////////////////
+
 
 /****************
  * AssignNode
