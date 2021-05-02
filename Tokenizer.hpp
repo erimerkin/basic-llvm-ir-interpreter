@@ -1,9 +1,10 @@
-#ifndef TOKENIZER_H
-#define TOKENIZER_H
+#ifndef TOKENIZER_HPP
+#define TOKENIZER_HPP
 
 #include <string>
 #include <vector>
 #include <fstream>
+#include <iostream>
 
 using namespace std;
 
@@ -21,23 +22,23 @@ enum TokenType
 
 struct Token
 {
-    int line;
     string value;
     TokenType type;
+    int line;
 };
 
 class Tokenizer
 {
 public:
-    static int lineNumber, lastLine;
-    // vector<Token> tokens;
     ifstream *inputFile;
+    char lastChar;
+    int line;
 
     Tokenizer(ifstream *inputFile);
     ~Tokenizer();
 
     // void tokenizeInput(ifstream &input);
-    Token* getNextToken();
+    Token getNextToken();
 };
 
 #endif

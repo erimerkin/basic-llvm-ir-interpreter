@@ -3,10 +3,9 @@
 #include <fstream>
 #include <string>
 
-#include "Parser.h"
+#include "Parser.hpp"
 
 using namespace std;
-
 
 /**
  * Creates the code for syntax error in given line
@@ -31,12 +30,13 @@ void syntaxError(int line, ofstream &output)
 void generateIR(ofstream &output, vector<ASTNode *> &program, unordered_set<string> &varmap)
 {
 
+    cout << "creating file\n";
+
     //Adding header to .ll file
     output << "; ModuleID = \'mylang2ir\'\n"
            << "declare i32 @printf(i8*, ...)\n"
            << "@print.str = constant [4 x i8] c\"%d\\0A\\00\"\n\n"
            << "define i32 @main() {\n";
-
 
     //Allocates declared variables
     for (auto test : varmap)
@@ -49,11 +49,12 @@ void generateIR(ofstream &output, vector<ASTNode *> &program, unordered_set<stri
     //Gives all allocated vars value of 0
     for (auto identifier : varmap)
     {
-        output << "store i32 0, i32* %" << identifier << "\n";
+        output << "\tstore i32 0, i32* %" << identifier << "\n";
     }
 
     output << "\n";
 
+    cout << program.size() << "\n";
 
     //Creates the code from given program
     for (auto expression : program)
@@ -69,28 +70,40 @@ void generateIR(ofstream &output, vector<ASTNode *> &program, unordered_set<stri
 int main(int argc, char *argv[])
 {
 
-    vector<ASTNode*> program;
+    vector<ASTNode *> program;
 
     string inputFile = argv[1];
-    string outputFile = inputFile.substr(0, inputFile.size() - 3);
+    string outputFile = inputFile.substr(0, inputFile.size() - 3) + ".ll";
 
     ifstream inFile(inputFile);
 
     Tokenizer *tokenizer = new Tokenizer(&inFile);
-    Parser *parser = new Parser(*tokenizer);
+    Parser *parser = new Parser(tokenizer);
 
-    while(!parser->error && parser->lastToken.type != token_eof){
-       program.push_back(parser->parse());
+    while (!parser->error && parser->currentToken.type != token_eof)
+    {
+
+        ASTNode *node = parser->parse();
+        if (node != nullptr)
+            program.push_back(node);
+
+        else
+            break;
     }
+
+    inFile.close();
 
     ofstream outFile(outputFile);
 
-    if(parser->error){
+    if (parser->error)
+    {
         syntaxError(parser->line, outFile);
+        return 0;
     }
 
     generateIR(outFile, program, parser->variables);
-    
+
+    outFile.close();
 
     return 0;
 }

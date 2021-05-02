@@ -1,23 +1,22 @@
-#ifndef PARSER_H
-#define PARSER_H
+#ifndef PARSER_HPP
+#define PARSER_HPP
 
 #include <unordered_set>
 
-#include "SyntaxTree.cpp"
-#include "Tokenizer.h"
+#include "ASTNode.hpp"
+#include "Tokenizer.hpp"
 
 using namespace std;
 class Parser
 {
 public:
     Tokenizer *tokenizer;
-    static int index;
     int line;
     bool error;
     unordered_set<string> variables;
-    Token *currentToken, lastToken;
+    Token currentToken, lastToken;
 
-    Parser(Tokenizer &_tokenizer);
+    Parser(Tokenizer *_tokenizer);
 
     ASTNode *parseParanExpr();
     ASTNode *parseFactor();
@@ -31,6 +30,7 @@ public:
     ASTNode *parse();
 
     void syntaxError(int line);
+    Token getToken();
 };
 
 #endif

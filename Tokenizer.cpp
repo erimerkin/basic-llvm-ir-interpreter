@@ -1,106 +1,142 @@
-#include "Tokenizer.h"
+#include "Tokenizer.hpp"
 
 Tokenizer::Tokenizer(ifstream *inputFile)
 {
     this->inputFile = inputFile;
+    this->lastChar = ' ';
+    this->line = 0;
 }
 
-Token *Tokenizer::getNextToken()
+Token Tokenizer::getNextToken()
 {
-    Token *tok;
+    Token tok;
 
-    char lastChar;
+    cout << "tokenizer: " << lastChar << "\n";
 
-    this->inputFile->get(lastChar);
-
-    while (!this->inputFile->eof())
+    if (!inputFile->eof())
     {
-        //Removes spaces
-        while (isspace(lastChar))
+        while (lastChar == '\n' && !inputFile->eof())
         {
+            cout << "eol\n";
+            tok.value = lastChar;
+            tok.type = token_eol;
+            tok.line = this->line;
             this->inputFile->get(lastChar);
+            this->line++;
+
+            return tok;
+        }
+
+        //Removes spaces
+        while (lastChar == ' ')
+        {
+            if (lastChar == '\n'){
+                this->line++;
+            }
+
+            cout << "space\n"; 
+            this->inputFile->get(lastChar);
+            if (inputFile->eof())
+            {
+                tok.type = token_eof;
+                tok.value = "_";
+                tok.line = this->line;
+                return tok;
+            }
         }
 
         //Checks if the first letter is alpha
         if (isalpha(lastChar))
         {
-            string identifier = "" + lastChar;
+
+            string identifier = "";
+            identifier.push_back(lastChar);
 
             this->inputFile->get(lastChar);
-            while (isalnum(lastChar))
+
+            while (isalnum(lastChar) && !inputFile->eof())
             {
-                identifier += lastChar;
+                identifier.push_back(lastChar);
                 this->inputFile->get(lastChar);
             }
 
             if (identifier == "if" || identifier == "while")
             {
-                tok->value = identifier;
-                tok->type = token_conditional;
+                tok.value = identifier;
+                tok.type = token_conditional;
             }
             else if (identifier == "choose")
             {
-                tok->value = identifier;
-                tok->type = token_choose;
+                tok.value = identifier;
+                tok.type = token_choose;
             }
             else if (identifier == "print")
             {
-                tok->value = identifier;
-                tok->type = token_print;
+                tok.value = identifier;
+                tok.type = token_print;
             }
             else
             {
-                tok->value = identifier;
-                tok->type = token_identifier;
+
+                tok.value = identifier;
+                tok.type = token_identifier;
             }
 
+            tok.line = this->line;
             return tok;
         }
 
         //checks if it is an integer
         if (isdigit(lastChar))
         {
-            string number = "" + lastChar;
+            string number = "";
+            number.push_back(lastChar);
             this->inputFile->get(lastChar);
 
-            while (isdigit(lastChar))
+            while (isdigit(lastChar) && !inputFile->eof())
             {
-                number += lastChar;
+                number.push_back(lastChar);
                 this->inputFile->get(lastChar);
             }
 
-            tok->value = number;
-            tok->type = token_number;
-
+            tok.value = number;
+            tok.type = token_number;
+            tok.line = this->line;
             return tok;
         }
 
         //Pass comments
         if (lastChar == '#')
         {
-            do
+
+            while (lastChar != '\n')
+            {
+                cout << "last char: " << lastChar << "\n";
+
                 this->inputFile->get(lastChar);
-            while (lastChar != EOF && lastChar != '\n' && lastChar != '\r');
+                if (inputFile->eof())
+                {
+                    tok.type = token_eof;
+                    tok.value = "_";
+                    inputFile->get(lastChar);
+                    return tok;
+                }
+            }
+            cout << "last char: " << lastChar << "\n";
+            return getNextToken();
         }
 
-        if (lastChar == EOF)
-        {
-            tok->type = token_eof;
-            return tok;
-        }
+        tok.value.push_back(lastChar);
+        tok.type = token_operator;
+        tok.line = this->line;
 
-        if (lastChar == '\n')
-        {
-            tok->value = lastChar;
-            tok->type = token_eol;
-            return tok;
-        }
+        inputFile->get(lastChar);
 
-        tok->value = lastChar;
-        tok->type = token_operator;
         return tok;
     }
 
-    tok->type = token_eof;
+    tok.type = token_eof;
+    tok.value = "_";
+    inputFile->get(lastChar);
     return tok;
 }
