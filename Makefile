@@ -1,3 +1,5 @@
+.PHONY: clean
+
 all: mylang2ir 
 
 mylang2ir: Parser.o Tokenizer.o ASTNode.o Main.o
@@ -18,7 +20,7 @@ ASTNode.o: ASTNode.cpp ASTNode.hpp
 	@g++ -std=c++14 -c ASTNode.cpp
 
 clean:
-	@rm -f *.o
+	@rm -f *.o mylang2ir *.txt *.ll
 
 
 
