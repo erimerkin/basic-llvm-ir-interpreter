@@ -8,6 +8,7 @@ A basic interpreter to LLVM-IR for a pseudo-language. This program will translat
 - C++11
 
 ### How to run
+For GCC compiler:
 ``` 
 > make 
 > ./mylang2ir input_file.my 
