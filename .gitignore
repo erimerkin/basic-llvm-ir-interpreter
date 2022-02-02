@@ -32,13 +32,9 @@
 *.app
 
 .vscode/
-
 *.ll
-*.my
-
 mylang2ir
-inputs/
-outputs/
 
+# MacOS and VSCODE conf files
 .DS_Store
 .vscode/settings.json
